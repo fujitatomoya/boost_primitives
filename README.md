@@ -26,7 +26,7 @@ make run
 
 # Authors
 
-* **Tomoya Fujita** --- Tomoya.Fujita@sony.com
+* **Tomoya Fujita** --- Tomoya.Fujita@sony.com / tomoya.fujita825@gmail.com
 
 # License
 

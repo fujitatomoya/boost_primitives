@@ -16,7 +16,12 @@ using namespace boost::interprocess;
 #define SIZE_8MB (8*1024*1024)
 #define SIZE_4MB (4*1024*1024)
 
-void test_shm()
+/*
+ * arguments:
+ *    boolean allocate_once: if true, allocate memory from the segment once, then VA will be re-used for the iteration.
+ *                           if faluse, allocate and dis-allocate will be done every single iteration.
+ */
+void test_shm(bool allocate_once)
 {
   printf("--- test with shm ---\n");
 
@@ -32,19 +37,32 @@ void test_shm()
 
   //Allocate a portion of the segment (raw memory)
   managed_shared_memory::size_type free_memory = segment.get_free_memory();
-  void * shptr = segment.allocate(SIZE_4MB);
   printf("whole memory size is %ld byte, the reset is %ld\n", free_memory, segment.get_free_memory());
 
   uint64_t time_sum = 0;
+  void * shptr;
   nanoseconds ns_diff = std::chrono::duration_cast<nanoseconds>(t1 - t0);
+
+  if (allocate_once) {
+    shptr = segment.allocate(SIZE_4MB);
+  }
   for (int i = 0; i < 10; i++) {
+    if (!allocate_once) {
+      shptr = segment.allocate(SIZE_4MB);
+    }
     t0 = Clock::now();
     // insert function here.
     std::memset(shptr, 0, SIZE_4MB);
     t1 = Clock::now();
+    if (!allocate_once) {
+      segment.deallocate(shptr);
+    }
     ns_diff = std::chrono::duration_cast<nanoseconds>(t1 - t0);
     time_sum += ns_diff.count();
     printf("%10ld nano seconds [%d iteration]\n", ns_diff.count(), i);
+  }
+  if (allocate_once) {
+    segment.deallocate(shptr);
   }
   printf("avg time = %.3f(ns)\n",time_sum / 10.0);
 }
@@ -76,8 +94,9 @@ void test_new()
 
 int main (int argc, char *argv[])
 {
-  test_new();
-  test_shm();
+  // test_new();
+  test_shm(true);
+  test_shm(false);
 
   return EXIT_SUCCESS;
 }

@@ -38,24 +38,30 @@ int main(int argc, char *argv[])
     vecObj->push_back(i + 100);
   }
   for (auto it = vecObj->begin(); it != vecObj->end(); it++) {
-    std::cout << ' ' << *it;
+    //std::cout << '' << *it;
   }
   std::cout << '\n';
 
   // View mapped region.
   std::cout << "1: address " << vecObj << ", size " << fs::file_size(fileName) << '\n';
+  std::cout << "  Press [Enter] to Shrink file...";
+  getchar();
 
   // Shrink file size. (should be beyond page size at least)
   bip::managed_mapped_file::shrink_to_fit(fileName);
 
   // View mapped region.
   std::cout << "2: address " << vecObj << ", size " << fs::file_size(fileName) << " (after shrink)\n";
+  std::cout << "  Press [Enter] to Grow file...";
+  getchar();
 
-  // Shrink file size. (should be beyond page size at least)
+  // Grow file size. (should be beyond page size at least)
   bip::managed_mapped_file::grow(fileName, (fileSize * 4));
 
   // View mapped region.
   std::cout << "3: address " << vecObj << ", size " << fs::file_size(fileName) << " (after grow)\n";
+  std::cout << "  Press [Enter] to Finish...";
+  getchar();
 
   return EXIT_SUCCESS;
 }

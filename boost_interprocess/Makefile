@@ -25,7 +25,6 @@ msgq_receiver: ./src/msgq_receiver.cpp
 run:
 	./shared_memory_pool
 	./shm_mapped_file
-	./managed_mapped_file
 
 clean:
 	rm -f ./shared_memory_pool
